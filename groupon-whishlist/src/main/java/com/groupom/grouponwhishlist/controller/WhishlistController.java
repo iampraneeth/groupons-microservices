@@ -32,6 +32,7 @@ public class WhishlistController {
 	@GetMapping("/mywhishlist/{email}")
 	public ResponseEntity<Whishlist> showWhishlist(@PathVariable String email) throws Exception {
 		Whishlist status = whishlistService.findWhislistByEmail(email);
+		System.out.println(status.getEmail());
 		return new ResponseEntity<Whishlist>(status, HttpStatus.FOUND);
 
 	}

@@ -10,7 +10,7 @@ import com.groupon.grouponadmin.entity.Admin;
 @RestController
 public class AdminController {
 
-	@GetMapping("/adminlogin")
+	@GetMapping("/adminsignin")
 	public ResponseEntity<Admin> signin() {
 		Admin admin = new Admin();
 		admin.setAdminEmail("admin@coupons.com");

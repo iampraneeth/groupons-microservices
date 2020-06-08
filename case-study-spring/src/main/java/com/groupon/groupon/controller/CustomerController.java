@@ -1,6 +1,6 @@
 package com.groupon.groupon.controller;
 
-import java.util.List;
+import javax.swing.text.DefaultEditorKit.CutAction;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -56,9 +56,14 @@ public class CustomerController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<Customer> logInDetailsForUser(@RequestBody Customer customerui) {
-		if (customerui.getEmail() == "admin@coupons.com") {
+		if (customerui.getEmail().equals("admin@coupons.com") && customerui.getPassword().equals("admin@123")) {
 
-			adminLogin();
+			/*
+			 * Admin admin = adminLogin(); Customer customer = new Customer();
+			 * customer.setEmail(admin.getAdminEmail()); return new
+			 * ResponseEntity<Customer>(customer, HttpStatus.OK);
+			 */
+			return new ResponseEntity<Customer>(customerui, HttpStatus.OK);
 
 		}
 
@@ -80,12 +85,12 @@ public class CustomerController {
 
 	}
 
-	@PostMapping("/adminsignin")
-	public ResponseEntity<Admin> adminLogin() {
+	@GetMapping("/adminsignin")
+	public Admin adminLogin() {
 
 		Admin admin1 = restTemplate.getForEntity("http://groupon-admin/adminsignin", Admin.class).getBody();
 
-		return new ResponseEntity<Admin>(admin1, HttpStatus.OK);
+		return admin1;
 
 	}
 
@@ -129,12 +134,12 @@ public class CustomerController {
 	}
 
 	@GetMapping("/mywhishlist")
-	public ResponseEntity<Coupons> showWhislistItems() {
-
+	public ResponseEntity<Whishlist> showWhislistItems() {
+System.out.println("hitting1");
 		Whishlist whishlist = restTemplate
-				.getForEntity("http://groupon-whishlist/mywhishlist" + this.email, Whishlist.class).getBody();
+				.getForEntity("http://groupon-whishlist/mywhishlist/" + this.email, Whishlist.class).getBody();
 
-		return new ResponseEntity<Coupons>(whishlist.getCoupons(), HttpStatus.FOUND);
+		return new ResponseEntity<Whishlist>(whishlist, HttpStatus.FOUND);
 
 	}
 
@@ -153,8 +158,9 @@ public class CustomerController {
 
 	@PostMapping("/bookeddoctor")
 	public ResponseEntity<Doctor> bookedDoctor(@RequestBody Doctor doctorEmail) {
-		
-		Doctor status = restTemplate.getForEntity("http://groupon-doctor/bookeddoctor/"+doctorEmail.getEmail(), Doctor.class).getBody();
+
+		Doctor status = restTemplate
+				.getForEntity("http://groupon-doctor/bookeddoctor/" + doctorEmail.getEmail(), Doctor.class).getBody();
 
 		return new ResponseEntity<Doctor>(HttpStatus.OK);
 
