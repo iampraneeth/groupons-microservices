@@ -7,5 +7,6 @@ import com.groupom.grouponwhishlist.entity.Whishlist;
 public interface WhishlistRepository extends MongoRepository<Whishlist, String> {
 
 	Whishlist findByEmail(String email);
+	void deleteByEmail(String email);
 
 }

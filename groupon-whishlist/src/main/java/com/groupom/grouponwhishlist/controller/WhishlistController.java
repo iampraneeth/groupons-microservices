@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.groupom.grouponwhishlist.entity.Whishlist;
 import com.groupom.grouponwhishlist.service.WhishlistService;
 
+@CrossOrigin("*")
 @Controller
 public class WhishlistController {
 
@@ -26,15 +28,22 @@ public class WhishlistController {
 	public ResponseEntity<Whishlist> getWhislistCoupon(@RequestBody Whishlist whishlist) throws Exception {
 		whishlistService.addWhishlistDetails(whishlist);
 
-		return new ResponseEntity<Whishlist>(HttpStatus.CREATED);
+		return new ResponseEntity<Whishlist>(HttpStatus.OK);
 	}
 
 	@GetMapping("/mywhishlist/{email}")
 	public ResponseEntity<Whishlist> showWhishlist(@PathVariable String email) throws Exception {
 		Whishlist status = whishlistService.findWhislistByEmail(email);
 		System.out.println(status.getEmail());
-		return new ResponseEntity<Whishlist>(status, HttpStatus.FOUND);
+		return new ResponseEntity<Whishlist>(status, HttpStatus.OK);
 
+	}
+	
+	@GetMapping("/deletewhishlist/{email}") 
+	public ResponseEntity<Whishlist> deleteWhishlist(@PathVariable String email) throws Exception{
+		
+		whishlistService.deleteWhishlistByEmail(email);
+		return new ResponseEntity<Whishlist>(HttpStatus.OK);
 	}
 
 }

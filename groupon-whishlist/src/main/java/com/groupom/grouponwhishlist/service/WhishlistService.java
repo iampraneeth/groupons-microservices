@@ -9,4 +9,6 @@ public interface WhishlistService {
 	Whishlist addWhishlistDetails(Whishlist whishlist);
 
 	Whishlist findWhislistByEmail(String email);
+	
+	boolean deleteWhishlistByEmail(String email);
 }

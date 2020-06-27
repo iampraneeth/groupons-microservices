@@ -31,4 +31,13 @@ public class DoctorServiceImpl implements DoctorService {
 		return doctorRepository.findByEmail(email);
 	}
 
+	@Override
+	public void DeleteDoctorByEmail(String email) {
+		doctorRepository.deleteByEmail(email);
+		
+		
+	}
+
+	
+
 }

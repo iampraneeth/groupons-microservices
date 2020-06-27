@@ -23,4 +23,10 @@ public class WhishlistServiceImpl implements WhishlistService {
 		return whishlistRepository.findByEmail(email);
 	}
 
+	@Override
+	public boolean deleteWhishlistByEmail(String email) {
+		 whishlistRepository.deleteByEmail(email);		
+		 return true;
+	}
+
 }

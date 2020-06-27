@@ -14,5 +14,8 @@ public interface DoctorService {
 	public List<Doctor> findAllDoctors();
 	
 	public Doctor findDoctorByEmail(String email);
+	
+	public void DeleteDoctorByEmail(String email);
+	
 
 }

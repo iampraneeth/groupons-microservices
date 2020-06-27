@@ -7,6 +7,10 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+
+
+
+
 @EnableEurekaServer
 @SpringBootApplication
 public class GrouponApplication {

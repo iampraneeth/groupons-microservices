@@ -9,4 +9,6 @@ import com.groupon.groupondoctor.entity.Doctor;
 public interface DoctorRepository extends MongoRepository<Doctor, String> {
 
 	Doctor findByEmail(String email);
+	void deleteByEmail(String email);
+	
 }

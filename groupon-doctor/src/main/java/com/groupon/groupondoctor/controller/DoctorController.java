@@ -3,6 +3,8 @@ package com.groupon.groupondoctor.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.groupon.groupondoctor.entity.Doctor;
 import com.groupon.groupondoctor.entity.DoctorList;
 import com.groupon.groupondoctor.service.DoctorService;
+
 @CrossOrigin("*")
 @RestController
 public class DoctorController {
@@ -25,6 +28,9 @@ public class DoctorController {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	/*
 	 * @Autowired private DoctorList doctorList;
@@ -32,7 +38,11 @@ public class DoctorController {
 
 	@PostMapping("/signup/doctor")
 	public ResponseEntity<Doctor> signUpDoctor(@RequestBody Doctor doctor) throws Exception {
-
+			
+		Doctor statusConflict = doctorService.findDoctorByEmail(doctor.getEmail());		
+		if(statusConflict!=null) {
+			return new ResponseEntity<Doctor>(HttpStatus.CONFLICT);
+		}
 		Doctor status = doctorService.addDoctor(doctor);
 
 		return new ResponseEntity<Doctor>(status, HttpStatus.CREATED);
@@ -48,7 +58,7 @@ public class DoctorController {
 			return new ResponseEntity<Doctor>(HttpStatus.NO_CONTENT);
 		}
 		if ((status.getEmail().equals(doctor.getEmail()) && (status.getPassword().equals(doctor.getPassword())))) {
-			return new ResponseEntity<Doctor>(status, HttpStatus.FOUND);
+			return new ResponseEntity<Doctor>(status, HttpStatus.OK);
 
 		}
 
@@ -66,9 +76,18 @@ public class DoctorController {
 			return new ResponseEntity<DoctorList>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<DoctorList>(doctorList, HttpStatus.FOUND);
+		return new ResponseEntity<DoctorList>(doctorList, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/deletedoctor/{email}")
+	public  ResponseEntity<Doctor> deleteDoctorByEmail(@PathVariable String email) throws Exception {
+		System.out.println("Hitting");
+		doctorService.DeleteDoctorByEmail(email);
+		return new ResponseEntity<Doctor>(HttpStatus.OK);
+
+	}
+	
 
 	@GetMapping("/doctorbyemail")
 	public Doctor doctorByEmail(String doctorEmail) throws Exception {
@@ -80,13 +99,11 @@ public class DoctorController {
 	@GetMapping("/bookeddoctor/{doctorEmail}")
 	public ResponseEntity<Doctor> bookedDoctor(@PathVariable String doctorEmail) throws Exception {
 
-		Doctor status =
-				doctorByEmail(doctorEmail);
-		
-		
+		Doctor status = doctorByEmail(doctorEmail);
 
 		return new ResponseEntity<Doctor>(status, HttpStatus.FOUND);
 
 	}
+	
 
 }

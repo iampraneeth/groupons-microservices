@@ -1,6 +1,6 @@
 package com.groupon.groupon.controller;
 
-import javax.swing.text.DefaultEditorKit.CutAction;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.groupon.groupon.entity.Admin;
 import com.groupon.groupon.entity.Coupons;
 import com.groupon.groupon.entity.Customer;
+import com.groupon.groupon.entity.CustomerList;
 import com.groupon.groupon.entity.Doctor;
 import com.groupon.groupon.entity.DoctorList;
 import com.groupon.groupon.entity.Payment;
@@ -34,9 +35,6 @@ public class CustomerController {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
-	@Autowired
-	private MongoOperations mongoOperations;
 
 	private String email = "";
 
@@ -85,6 +83,24 @@ public class CustomerController {
 
 	}
 
+	@GetMapping("/allcustomers")
+	public ResponseEntity<CustomerList> listOfAllCustomers() {
+		List<Customer> customersList = customerService.findAll();
+
+		CustomerList customerList = new CustomerList();
+		customerList.setCustomers(customersList);
+		return new ResponseEntity<CustomerList>(customerList, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/deletecustomer/{email}")
+	public ResponseEntity<Customer> deleteCustomer(@PathVariable String email) {
+		customerService.deleteByEmail(email);
+		
+		return new ResponseEntity<Customer>(HttpStatus.OK);
+
+	}
+
 	@GetMapping("/adminsignin")
 	public Admin adminLogin() {
 
@@ -112,13 +128,14 @@ public class CustomerController {
 		Payment myPayments = restTemplate.getForEntity("http://groupon-payment/mypayments/" + this.email, Payment.class)
 				.getBody();
 
-		return new ResponseEntity<Payment>(myPayments, HttpStatus.FOUND);
+		return new ResponseEntity<Payment>(myPayments, HttpStatus.OK);
 
 	}
 
 	@PostMapping("/addwhishlist")
-	public ResponseEntity<Whishlist> addToWhishlist(@RequestBody Coupons coupons) {
+	public ResponseEntity<Whishlist> addToWhishlist(@RequestBody Coupons coupons) throws Exception{
 
+		System.out.println(coupons.getCouponId());
 		Whishlist whishlist = new Whishlist(); // creating new wishlist
 		whishlist.setCoupons(coupons);
 		whishlist.setEmail(this.email);
@@ -129,18 +146,24 @@ public class CustomerController {
 				.exchange("http://groupon-whishlist/addwhishlist", HttpMethod.POST, requestEntity, Whishlist.class)
 				.getBody();
 
-		return new ResponseEntity<Whishlist>(status, HttpStatus.CREATED);
+		return new ResponseEntity<Whishlist>(status, HttpStatus.OK);
 
 	}
 
 	@GetMapping("/mywhishlist")
 	public ResponseEntity<Whishlist> showWhislistItems() {
-System.out.println("hitting1");
 		Whishlist whishlist = restTemplate
 				.getForEntity("http://groupon-whishlist/mywhishlist/" + this.email, Whishlist.class).getBody();
 
-		return new ResponseEntity<Whishlist>(whishlist, HttpStatus.FOUND);
+		return new ResponseEntity<Whishlist>(whishlist, HttpStatus.OK);
 
+	}
+
+	@GetMapping("/deletewhishlist")
+	public ResponseEntity<Whishlist> deleteWhishlist() throws Exception {
+		Whishlist whishlist = restTemplate
+				.getForEntity("http://groupon-whishlist/deletewhishlist/" + this.email, Whishlist.class).getBody();
+		return new ResponseEntity<Whishlist>(HttpStatus.OK);
 	}
 
 	@GetMapping("/doctorlist")
@@ -152,7 +175,7 @@ System.out.println("hitting1");
 			return new ResponseEntity<DoctorList>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<DoctorList>(status, HttpStatus.FOUND);
+		return new ResponseEntity<DoctorList>(status, HttpStatus.OK);
 
 	}
 
@@ -172,7 +195,7 @@ System.out.println("hitting1");
 		Coupons coupons = restTemplate.getForEntity("http://groupon-coupon/selectcoupon/{couponid}/", Coupons.class)
 				.getBody();
 
-		return new ResponseEntity<Coupons>(coupons, HttpStatus.CONTINUE);
+		return new ResponseEntity<Coupons>(coupons, HttpStatus.OK);
 
 	}
 
